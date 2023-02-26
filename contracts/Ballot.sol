@@ -90,4 +90,8 @@ contract Ballot {
 
         return winningProposal_;
     }
+
+    function nameOfWinner() external view returns (bytes32){
+        return proposals[winningProposal()].name;
+    }
 }
