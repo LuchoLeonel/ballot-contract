@@ -1,33 +1,31 @@
-import { ethers } from "hardhat";
+import { ethers } from "ethers";
 import { Ballot__factory } from "../typechain-types";
 import * as dotenv from "dotenv";
 
 dotenv.config()
 
-const PROPOSALS = ["Proposal 1", "Proposal 2", "Proposal 3"];
-
-function convertStringArrayToBytes32(array: string[]) {
-  const bytes32Array = [];
-  for (let index = 0; index < array.length; index++) {
-    bytes32Array.push(ethers.utils.formatBytes32String(array[index]));
-  }
-  return bytes32Array;
-}
+const PROPOSALS = ["p1", "p2", "p3"];
 
 async function main() {
+  //Get arguments from script run
   const args = process.argv;
   let proposals = args.slice(2);
   if(proposals.length === 0) { proposals = PROPOSALS; }
-  const provider = ethers.getDefaultProvider('goerli');
+  //Get provider to connect to network
+  const provider = new ethers.providers.InfuraProvider("goerli", process.env.INFURA_PRIVATE_KEY);
+  //Get wallet
   const wallet = new ethers.Wallet(process.env.PRIVATE_KEY!);
+  //Connect wallet to the provider
   const signer = wallet.connect(provider);
+  //Create contract factory
   const ballotFactory = new Ballot__factory(signer)
-  const ballotContract = await ballotFactory.deploy(
-    convertStringArrayToBytes32(proposals)
-  );
+  //Deploy contract
+  const ballotContract = await ballotFactory.deploy(proposals
+    .map(prop =>ethers.utils.formatBytes32String(prop)));
+  //Wait till contract is deployed
   await ballotContract.deployTransaction.wait();
-  console.log(`contract deployed. address: ${ballotContract.address}`)
-  // TODO
+  //Output contract address
+  console.log(`Contract Address: ${ballotContract.address}`)
 }
 
 main().catch((error) => {
