@@ -4,7 +4,7 @@ import * as dotenv from 'dotenv';
 dotenv.config();
 
 
-//yarn run ts-node --files ./scripts/DelegateVote.ts "0x275957a9e0040a662775C2a7C873a4147248387d" "The weigth receiver's address"
+//yarn run ts-node --files ./scripts/DelegateVote.ts "0x275957a9e0040a662775C2a7C873a4147248387d" "The receiver's address"
 async function main() {
     const args = process.argv;
 
@@ -33,7 +33,7 @@ async function main() {
     const ballotContractFactory = new Ballot__factory(signer);
     const ballotContract = ballotContractFactory.attach(ballotContractAddress);
     // The Delegation...
-    const txReceipt =  await ballotContract.giveRightToVote(delegatedVoterAddress,{
+    const txReceipt =  await ballotContract.delegate(delegatedVoterAddress,{
         gasLimit: 100000
       });
     console.log(`Delegation receipt: ${txReceipt}`)
